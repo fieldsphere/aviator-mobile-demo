@@ -71,6 +71,7 @@ jobs:
         if: steps.snyk-scan.outcome == 'failure'
         env:
           WEBHOOK_URL: ${{ secrets.CURSOR_SECURITY_WEBHOOK_URL }}
+          WEBHOOK_AUTH: ${{ secrets.CURSOR_WEBHOOK_AUTH }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
             echo "CURSOR_SECURITY_WEBHOOK_URL not configured. Skipping webhook notification."
@@ -86,8 +87,14 @@ jobs:
             SNYK_RESULTS=$(cat snyk-results.json)
           fi
 
+          AUTH_HEADER=""
+          if [ -n "$WEBHOOK_AUTH" ]; then
+            AUTH_HEADER="-H \"Authorization: $WEBHOOK_AUTH\""
+          fi
+
           curl -s -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
+            -H "Authorization: $WEBHOOK_AUTH" \
             -d "$(jq -n \
               --arg context "Snyk found vulnerabilities in $REPO on branch $BRANCH (PR #$PR_NUMBER)" \
               --arg branch "$BRANCH" \
