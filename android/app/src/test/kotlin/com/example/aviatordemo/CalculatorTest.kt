@@ -10,7 +10,7 @@ class CalculatorTest {
 
     @Test
     fun `add returns sum of two numbers`() {
-        assertEquals(5.0, calculator.add(2.0, 3.0), 0.001)
+        assertEquals(6.0, calculator.add(2.0, 3.0), 0.001)
     }
 
     @Test
